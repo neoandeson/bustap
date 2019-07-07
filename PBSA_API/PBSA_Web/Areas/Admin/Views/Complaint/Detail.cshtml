@@ -1,0 +1,287 @@
+﻿@model int
+@{
+    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+    //var checkinDistance = float.Parse(DataService.Constants.SystemConstants.CheckinAcceptableDistance) * 1000;
+}
+<link href="~/css/mycss.css" rel="stylesheet" />
+<link href="~/css/mytable.css" rel="stylesheet" />
+<link href="~/css/carousel.css" rel="stylesheet" />
+<title>PBSA | Complaint Detail</title>
+
+<div class="container-fluid" style="font-size: large">
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <div class="row">
+            <div class="col-md-7">
+                <h4 class="c-grey-900 mT-10 mB-30">Complaint @Model 's detail</h4>
+            </div>
+            <div class="col-md-5">
+                <div style="float: right">
+                    <button id="btnApprove" type="button" class="btn btn-success" onclick="ApproveComplaint()">Approve</button>
+                    <button id="btnReject" type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Reject</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="my_table my_table_boxshadow">
+                    <thead class="my_thead">
+                        <tr>
+                            <td colspan="8" style="padding: 0 0.5em">Compliant's content</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="my_label my_tdMinWidth">Type</td>
+                            <td><span id="txtType"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label">State</td>
+                            <td><span id="txtState"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label">Booked Time</td>
+                            <td><span id="txtBookTime"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label">Created Time</td>
+                            <td><span id="txtCreatedTime"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label">Resolved Time</td>
+                            <td><span id="txtResolvedTime"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label">Staff Name</td>
+                            <td><span id="txtStaffName"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label">Detail</td>
+                            <td colspan="5"><span id="txtDetail"></span></td>
+                        </tr>
+                        <tr id="rejectRow" hidden>
+                            <td class="my_label">Reject Reason</td>
+                            <td colspan="5"><span id="txtRejectReason"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="my_table my_table_boxshadow">
+                    <thead class="my_thead">
+                        <tr>
+                            <td colspan="4" style="padding: 0 0.5em">Customer's information<span id="customerActor"></span></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="my_label">Customer </td>
+                            <td style="width: 18em" class="my_tdMinWidth"><span id="txtCName"></span></td>
+                            <td class="my_label">Phone</td>
+                            <td style="width: 8em"><span id="txtCPhone"></span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="my_thead" style="padding: 0 0.5em">Customer's locations</td>
+                        </tr>
+                    </tbody>
+                    <tbody id="bookingHis">
+                        <tr>
+                            <th style="width: 9em;padding: 0 0.5em;">State</th>
+                            <th>Time</th>
+                            <th colspan="2">Distance to Barber</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <table class="my_table my_table_boxshadow">
+                    <thead class="my_thead">
+                        <tr>
+                            <td id="hdComplaintImage" colspan="2" style="padding: 0 0.5em">Complaint images</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div id="slider" style="font-size:smaller">
+                                    <a href="#" class="control_next">></a>
+                                    <a href="#" class="control_prev"><</a>
+                                    <ul id="complaintImg"></ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="my_table my_table_boxshadow">
+                    <thead class="my_thead">
+                        <tr>
+                            <td colspan="4" style="padding: 0 0.5em">Barber's information<span id="barberActor"></span></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="my_label width5em">Barber</td>
+                            <td style="width: 18em"><span id="txtBName"></span></td>
+                            <td class="my_label">Phone</td>
+                            <td style="width: 8em"><span id="txtBPhone"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--Begin Modal-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="mymodal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Reject reason</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <table class="my_table">
+                        <tbody>
+                            <tr>
+                                <td class="my_label width5em">Reason<span class="requiredField"></span></td>
+                                <td class="width20em"><input id="txtReason" class="form-control" type="text" maxlength="100"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnAdd" type="button" class="btn btn-danger" onclick="RejectComplaint()">Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Modal-->
+
+    <input id="txtId" type="text" hidden value="@Model" />
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="~/js/carousel.js"></script>
+<script src="~/js/common.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        ViewComplaintDetail(@Model);
+    });
+
+    function ViewComplaintDetail(id) {
+        $.ajax({
+            type: "GET",
+            url: GetURL("complaint/get-info", {"Id": id}),
+            success: function (data) {
+                $('#myModalLabel').text("Complaint's infomation");
+                $('#txtId').val(data.id);
+                $('#txtBookingId').text(data.bookingId);
+                if (data.resolvedTime) {
+                    $('#txtResolvedTime').text(parseDate(data.resolvedTime));
+                } else {
+                    $('#txtResolvedTime').text('');
+                }
+                $('#txtType').text(data.typeNavigation.name);
+                $('#txtState').text(data.state);
+                $('#txtBookTime').text(parseDate(data.booking.bookedTime));
+                $('#txtCreatedTime').text(parseDate(data.createdTime));
+                $('#txtDetail').text(data.detail);
+                if (data.staff != null) {
+                    $('#txtStaffName').text(data.staff.fullName);
+                } else {
+                    $('#txtStaffName').text('');
+                }
+
+                $('#txtBName').text(data.booking.barber.lastName + " " + data.booking.barber.middleName + " " + data.booking.barber.firstName);
+                $('#txtCName').text(data.booking.customer.lastName + " " + data.booking.customer.middleName + " " + data.booking.customer.firstName);
+                $('#txtBPhone').text(data.booking.barber.contactPhone);
+                $('#txtCPhone').text(data.booking.customer.contactPhone);
+
+                //Complaint image
+                $('#complaintImg').children().remove();
+                $('#hdComplaintImage').text('Complaint images (' + data.complaintImages.length + ")");
+                $.each(data.complaintImages, function (index, value) {
+                    $('#complaintImg').append(`<li><img class="complaintImg2" src="` + value.url + `" /></li>`);
+                });
+                initCarousel();
+                //End complaint image
+
+                if (data.initiatorId == data.booking.barber.userId) {
+                    $('#barberActor').text(" (Complaintor)");
+                } else {
+                    $('#customerActor').text(" (Complaintor)");
+                }
+
+                if (data.state != 'pending' && data.state != "processing") {
+                    hide('#btnReject');
+                    hide('#btnApprove');
+                } else {
+                    ProcessComplaint();
+                    $('#txtState').text('processing');
+                    show('#btnReject');
+                    show('#btnApprove');
+                }
+
+                var barberLocation = data.booking.barber;
+                var cusomterLocation = data.booking.customerLocations;
+
+                $.each(cusomterLocation, function (index, value) {
+                    $('#bookingHis').append(
+                        `<tr id="tr` + value.bookingState + `" class="my_hisList"` + `>
+                            <td style="padding: 0 0.5em"><span>`+ value.bookingState + `</span></td>
+                            <td style="padding: 0 0.5em"><span>` + parseDate(value.time) + `</span></td>
+                            <td style="padding: 0 0.5em"><span>` + distance(value.latitude, value.longitude, barberLocation.latitude, barberLocation.longitude) + `</span></td>
+                        </tr>`);
+                });
+
+                if (data.rejectReason) {
+                    $('#rejectRow').removeAttr('hidden');
+                    $('#txtRejectReason').text(data.rejectReason);
+                }
+            }
+        });
+    }
+
+    function ApproveComplaint() {
+        var rs = confirm("Are you sure to approve this complaint ?");
+        if (rs) {
+            $.ajax({
+                type: "POST",
+                url: GetURL("complaint/approve", { "Id": $('#txtId').val(), "staffId": getCookie('username') }),
+                success: function () {
+                    alert("Approve successfully");
+                    $('#btnReject,#btnApprove').prop("disabled", true);
+                    window.location.reload();
+                }
+            });
+        }
+    }
+
+    function RejectComplaint() {
+        var reason = $('#txtReason').val();
+        if (!reason) {
+            alert("Please fill out reject reason");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: GetURL("complaint/reject", { "Id": $('#txtId').val(), "staffId": getCookie('username'), "reason": reason}),
+            success: function () {
+                alert("Reject successfully");
+                $('#btnReject,#btnApprove').prop("disabled", true);
+                window.location.reload();
+            }
+        });
+    }
+
+    function ProcessComplaint() {
+        $.ajax({
+            type: "POST",
+            url: GetURL("complaint/process", {"Id": @Model})
+        });
+    }
+
+</script>

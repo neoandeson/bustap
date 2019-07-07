@@ -1,0 +1,131 @@
+﻿
+@{
+    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+}
+<link href="~/css/mycss.css" rel="stylesheet" />
+<link href="~/lib/jqueryUI/jquery-ui.css" rel="stylesheet" />
+<title>PBSA | Statistic</title>
+
+<div class="container-fluid">
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <h2 class="col-10 color-black">Overall Statistic</h2>
+        <table style="width: 100%">
+            <tr>
+                <td style="padding: 1em;">
+                    <div class="bg-green statistic-block">
+                        <h2>Income</h2>
+                        <span class="sb-des">Total : </span><span class="sb-number" id="totalCharge"></span>
+                    </div>
+                </td>
+                <td style="padding: 1em;">
+                    <div class="bg-blue statistic-block">
+                        <h2>Barber</h2>
+                        <span class="sb-des">Total : </span><span class="sb-number" id="totalBarber"></span><span class="sb-des"> barbers</span>
+                    </div>
+                </td>
+                <td style="padding: 1em;">
+                    <div class="bg-orange statistic-block">
+                        <h2>Customer</h2>
+                        <span class="sb-des">Total : </span><span class="sb-number" id="totalCustomer"></span><span class="sb-des"> customers</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <table>
+            <tbody>
+                <tr>
+                    <td style="padding-left:1em;" class="color-black"><h2>Month Statistic</h2></td>
+                    <td><input class="form-control" style="display: initial !important; width:6em" type="text" id="datepicker" autocomplete="off"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table style="width: 100%">
+            <tr>
+                <td style="padding: 1em;">
+                    <div class="statistic-block-small">
+                        <h4>Book</h4>
+                        <span class="sb-smallnumber" id="totalmbook"></span>
+                    </div>
+                </td>
+                <td style="padding: 1em;">
+                    <div class="statistic-block-small">
+                        <h4>Checkout</h4>
+                        <span class="sb-smallnumber" id="totalmcheckout"></span>
+                    </div>
+                </td>
+                <td style="padding: 1em;">
+                    <div class="statistic-block-small">
+                        <h4>Charge Fee</h4>
+                        <span class="sb-smallnumber" id="totalmFee"></span>
+                    </div>
+                </td>
+                <td style="padding: 1em;">
+                    <div class="statistic-block-small">
+                        <h4>Complaint</h4>
+                        <span class="sb-smallnumber" id="totalmComplaint"></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
+<script src="~/lib/jqueryUI/jquery-ui.js"></script>
+<script src="~/js/common.js"></script>
+<script src="~/js/moment.js"></script>
+<script src="~/js/chart.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        LoadGeneral();
+        InitDatepicker();
+    });
+
+    function LoadGeneral() {
+        $.ajax({
+            type: "GET",
+            url: GetURL("statistic/generalStatistic"),
+            success: function (data) {
+                $('#totalCharge').text(' ' + toMoney(data.totalChargeFee));
+                $('#totalBarber').text(' ' + data.totalBarber + ' ');
+                $('#totalCustomer').text(' ' + data.totalCustomer + ' ');
+            }
+        });
+    }
+
+    function LoadMonth(year, month) {
+        $.ajax({
+            type: "GET",
+            url: GetURL("statistic/monthStatistic", { "year": year, "month": month }),
+            success: function (data) {
+                $('#totalmbook').text(data.totalBook);
+                $('#totalmcheckout').text(data.totalBookCheckout);
+                $('#totalmFee').text(toMoney(data.totalChargeFee));
+                $('#totalmComplaint').text(data.totalComplaint);
+            }
+        });
+    }
+
+    function InitDatepicker() {
+        $("#datepicker").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'mm yy',
+            onClose: function (dateText, inst) {
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+                var tmp = $('#datepicker').val().split(' ');
+                LoadMonth(tmp[1], tmp[0]);
+            }
+        });
+        $("#datepicker").datepicker().datepicker("setDate", new Date());
+
+
+        var tmp = $('#datepicker').val().split(' ');
+        LoadMonth(tmp[1], tmp[0]);
+    }
+
+</script>

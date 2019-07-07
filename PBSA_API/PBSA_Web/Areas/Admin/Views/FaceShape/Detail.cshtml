@@ -1,0 +1,409 @@
+﻿@model int
+@{
+    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+}
+<link href="~/css/mycss.css" rel="stylesheet" />
+<link href="~/css/mytable.css" rel="stylesheet" />
+<link href="~/css/carousel.css" rel="stylesheet" />
+<title>PBSA | Face Shape Detail</title>
+<img id="loading" src="~/assets/static/images/ajax-loader.gif" style="width: 2em;margin-left: 45em; display: none; position: absolute;" />
+<div class="container-fluid">
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <div class="row" style="padding: 0 1em">
+            <table class="w-100">
+                <tr>
+                    <td class="w-75">
+                        <h2 class="c-grey-900 mT-10 mB-30">
+                            Face Shape <span id="hdHairStyle"></span> 's detail
+                            <span>
+                                <button id="hasCentroid" disabled type="button" class="btn btn-success" style="display: none;">Calculated</button>
+                                <button id="noCentroid" disabled type="button" class="btn btn-warning" style="display: none;">Not Calculated</button>
+                            </span>
+                        </h2>
+                    </td>
+                    <td class="w-25">
+                        <div style="float: right">
+                            <button id="btnTrain" type="button" class="btn btn-secondary" onclick="Train()">Calculate ratios</button>
+                            <button id="btnAdd" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="AddModal()">Add Sample</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="my_table my_table_boxshadow">
+                    <thead class="my_thead">
+                        <tr>
+                            <td style="padding: 0 0.5em; width:12em" colspan="3">Hair style information</td>
+                            <td style="padding: 0 0.5em; float: right"><button onclick="UpdateFaceShapeInfo()" class="btn btn-light">Update</button></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="my_label my_tdMinWidth">Name</td>
+                            <td class="my_tdMinWidth"><input class="form-control" id="txtName" readonly type="text" maxlength="20" /></td>
+                            <td class="my_label my_tdMinWidth">Description</td>
+                            <td><input class="form-control" id="txtDescription" type="text" maxlength="200" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <div class="row">
+            <div class="col-12">
+                <table id="ratioTable" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Hairstyle name</th>
+                            <th>Description</th>
+                            <th>isShown</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--Begin Modal-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="mymodal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Hairstyle Sample Detail</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <table class="my_table">
+                        <tbody>
+                            <tr>
+                                <td class="my_label my_tdMinWidth">Face</td>
+                                <td>
+                                    <input id="txtFaceName" required type="text" class="form-control w-25" readonly />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="my_label my_tdMinWidth">Hairstyle</td>
+                                <td>
+                                    <select id="slHairtyles" class="form-control-sm"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="my_label">Description</td>
+                                <td><input id="txtDesc" required type="text" class="form-control" maxlength="200" /></td>
+                            </tr>
+                            <tr>
+                                <td class="my_label">Image </td>
+                                <td>
+                                    <input class="btn form" type="file" id="file" name="file" onchange="uploadImage()" />
+                                    @*<input type="button" class="btn" value="Upload" onclick="uploadImage()">*@
+
+                                    <div class='preview'>
+                                        <img src="" id="img" width="200" height="200" alt="">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="my_label">Is Shown</td>
+                                <td><input id="ckbIsShown" required type="checkbox" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnAddFace" type="button" class="btn btn-primary" onclick="Add()" data-toggle="modal">Add</button>
+                    <button id="btnUpdateFace" type="button" class="btn btn-primary" onclick="Update()" data-toggle="modal">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Modal-->
+
+    <input id="txtId" type="text" hidden value="@Model" />
+    <input id="urlSample" type="text" hidden value="" />
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
+<script src="~/js/common.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //var relatedFace_arr = [];
+    var ratio_arr = ["Height",
+        "Width",
+        "ForeheadWidth",
+        "CheekWidth",
+        "JawWidth",
+        "JawDiagonal",
+        "ChinToMidFace",
+        "CheekToMidFace",
+        "NarrowWide",
+        "PointyFlat",
+        "One"];
+    var hairstyle_arr = [];
+    var faceName = '';
+
+    $(document).ready(function () {
+        ViewFaceShapeDetail(@Model);
+        DrawTable();
+        GetAllHairStyle();
+        $('#loading').hide();
+    });
+
+    function ViewFaceShapeDetail(id) {
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: GetURL("faceshape/get-info", {"id": id}),
+            success: function (data) {
+                faceName = data.faceShapeName;
+                $('#txtId').val(data.id);
+                $('#txtName').val(data.faceShapeName);
+                $('#txtDescription').val(data.description);
+                if (data.hasCentroid) {
+                    show('#hasCentroid');
+                    hide('#noCentroid');
+                } else {
+                    hide('#hasCentroid');
+                    show('#noCentroid');
+                }
+            }
+        });
+    }
+
+    function GetAllHairStyle() {
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: GetURL("/hairstyle/get-all-table"),
+            success: function (data) {
+                hairstyle_arr = data.data;
+            }
+        });
+    }
+
+    function DrawTable() {
+        $("#ratioTable").dataTable().fnDestroy()
+
+        $('#ratioTable').dataTable({
+            "processing": false,
+            "serverSide": false,
+            "destroy": true,
+            "ajax": {
+                "url": GetURL("/hairstylesample/get-all-table-by-faceshape", {"faceshapeId": @Model}),
+                "type": "GET"
+            },
+            "columns": [
+                {
+                    width: "7%",
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
+                    data: "hairStyleName",
+                    width: "15%",
+                },
+                {
+                    data: "description",
+                    width: "30%",
+                },
+                {
+                    data: "isShown",
+                    width: "8%",
+                },
+                {
+                    width: "12%",
+                    data: { id: 'id', url: 'url', description: 'description', isShown: 'isShown', hairStyleId: "hairStyleId"},
+                    render: function (data, type, row) {
+                        var buttonView = '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="UpdateModal(\'' + data.id + '\',\'' + data.url + '\',\'' + data.description + '\',' + data.isShown + ',' + data.hairStyleId + ')">Detail</button>';
+                        var buttonDelete = '<button type="button" class="btn btn-danger" onclick="Delete(\'' + data.id + '\')">Delete</button>';
+                        return buttonView + '&nbsp;' + buttonDelete;
+                    }
+                }
+            ]
+        });
+    }
+
+    function AddModal() {
+        $('#slHairtyles').children().remove();
+        $.each(hairstyle_arr, function (index, value) {
+            $('#slHairtyles').append(`<option value="` + value.id + `">` + value.hairStyleName + `</option>`);
+        });
+        $('#txtDesc').val('');
+        $('#txtFaceName').val(faceName);
+        $('#urlSample').val('');
+        $('#img').prop('src', '')
+        $('#file').val('');
+
+        $('#slHairtyles').prop("disabled", false);
+        $('#ckbIsShown').prop("checked", false);
+        hide('#btnUpdateFace');
+        show('#btnAddFace');
+    }
+
+    function UpdateModal(id, url, desc, isShown, hairStyleId) {
+        $('#myModalLabel').text('Hairstyle Sample Detail');
+        $('#txtId').val(id);
+
+        $('#txtDesc').val(desc);
+        $('#txtFaceName').val(faceName);
+        $('#slHairtyles').children().remove();
+        $.each(hairstyle_arr, function (index, value) {
+            $('#slHairtyles').append(`<option value="` + value.id + `">` + value.hairStyleName + `</option>`);
+        });
+        $('#slHairtyles').val(hairStyleId)
+        $('#file').val('');
+        $('#img').prop('src', url)
+        $('#slHairtyles').prop("disabled", true);
+        $('#ckbIsShown').prop("checked", isShown);
+        hide('#btnAddFace');
+        show('#btnUpdateFace');
+    }
+
+    function Add() {
+        var files = $('#file')[0].files[0];
+        if (!files) {
+            alert('Please add an image');
+        } else if (!$('#txtDesc').val()) {
+            alert('Please fill description');
+        }
+        else {
+        $.ajax({
+            type: "POST",
+            "contentType": "application/json-patch+json",
+            url: GetURL("hairstyle/add-hair-sample"),
+            data: JSON.stringify({
+                "id": '' + $('#txtId').val(),
+                "hairStyleId": '' + $('#slHairtyles').val(),
+                "faceShapeId": '' + $('#txtId').val(),
+                "description": '' + $('#txtDesc').val(),
+                "url": '' + $('#urlSample').val(),
+                "isShown": document.getElementById("ckbIsShown").checked
+            }),
+            success: function () {
+                alert("Add successfully");
+                DrawTable()
+                $('#btnClose').click();
+            }
+            });
+        }
+    }
+
+    function Update() {
+        if (!$('#img').prop('src')) {
+            alert('Please add an image');
+        } else if (!$('#txtDesc').val()) {
+            alert('Please fill description');
+        } else {
+            $.ajax({
+                type: "POST",
+                "contentType": "application/json-patch+json",
+                url: GetURL("hairstyle/update-hair-sample"),
+                data: JSON.stringify({
+                    "id": '' + $('#txtId').val(),
+                    "hairStyleId": '' + $('#slHairtyles').val(),
+                    "faceShapeId": @Model,
+                    "description": '' + $('#txtDesc').val(),
+                    "url": '' + $('#img').prop('src'),
+                    "isShown": document.getElementById("ckbIsShown").checked
+                }),
+                success: function () {
+                    alert("Update successfully");
+                    DrawTable();
+                    $('#btnClose').click();
+                }
+            });
+        }
+    }
+
+    function Delete(id) {
+        $.ajax({
+            type: "POST",
+            headers: {
+                "Authorization": GetAccessToken(),
+            },
+            url: GetURL("hairstyle/delete-hair-sample", { "id": id}),
+            success: function () {
+                alert("Delete successfully");
+                ViewFaceShapeDetail(@Model);
+                DrawTable();
+            }
+        });
+    }
+
+    function Train() {
+        $.ajax({
+            type: "POST",
+            headers: {
+                "Authorization": GetAccessToken(),
+            },
+            url: GetURL("faceshape/calculateCentroid", { "faceshapeId": @Model}),
+            success: function () {
+                ViewFaceShapeDetail(@Model);
+                alert("Calculate  common ratios successfully");
+            },
+            beforeSend: function () {
+                $('#loading').show();
+            },
+            complete: function () {
+                $('#loading').hide();
+            }
+        });
+    }
+
+    function uploadImage() {
+        var fd = new FormData();
+        var files = $('#file')[0].files[0];
+        fd.append('file', files);
+        if (files) {
+            $.ajax({
+                url: GetURL("upload"),
+                type: 'POST',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response != 0) {
+                        $("#img").attr("src", response);
+                        $(".preview img").show(); // Display image
+                        $('#urlSample').val(response);
+                    } else {
+                        alert('file not uploaded');
+                    }
+                },
+            });
+        } else {
+            alert('Please select and image');
+        }
+    }
+
+    function UpdateFaceShapeInfo() {
+        if (!$('#txtDescription').val()) {
+            alert('Please add description');
+        } else if (!$('#txtName').val()) {
+            alert('Please fill name');
+        } else {
+            $.ajax({
+                type: "POST",
+                "contentType": "application/json-patch+json",
+                url: GetURL("faceshape/update"),
+                data: JSON.stringify({
+                    "id": @Model,
+                    "name": $('#txtName').val(),
+                    "description": $('#txtDescription').val(),
+                }),
+                success: function () {
+                    alert("Update successfully");
+                    $('#btnClose').click();
+                }
+            });
+        }
+    }
+</script>

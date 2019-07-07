@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html>
+<!-- Mirrored from colorlib.com/polygon/adminator/datatable.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 14 Feb 2019 14:09:43 GMT -->
+<!-- Added by HTTrack -->
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<!-- /Added by HTTrack -->
+
+<head>
+    @*
+        <style>
+            #loader{transition:all .3s ease-in-out;opacity:1;visibility:visible;position:fixed;height:100vh;width:100%;background:#fff;z-index:90000}#loader.fadeOut{opacity:0;visibility:hidden}.spinner{width:40px;height:40px;position:absolute;top:calc(50% - 20px);left:calc(50% - 20px);background-color:#333;border-radius:100%;-webkit-animation:sk-scaleout 1s infinite ease-in-out;animation:sk-scaleout 1s infinite ease-in-out}@-webkit-keyframes sk-scaleout{0%{-webkit-transform:scale(0)}100%{-webkit-transform:scale(1);opacity:0}}@keyframes sk-scaleout{0%{-webkit-transform:scale(0);transform:scale(0)}100%{-webkit-transform:scale(1);transform:scale(1);opacity:0}}
+        </style>*@
+    <link href="~/css/style.css" rel="stylesheet" />
+</head>
+
+<body class="app is-collapsed">
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+    <div>
+        <div class="sidebar mt-sidebar">
+            <div class="sidebar-inner">
+                <div class="sidebar-logo mt-sidebar-logo">
+                    <div class="peers ai-c fxw-nw">
+                        <div class="peer peer-greed">
+                            <a class="sidebar-link td-n" href="/Home/Index">
+                                <div class="peers ai-c fxw-nw">
+                                    <div class="peer">
+                                        <div class="logo"><img src="~/assets/static/images/logo2.png" alt="" style="height: 3.5em; margin:0.5em"></div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="peer">
+                            <div class="mobile-toggle sidebar-toggle"><a href="#" class="td-n"><i class="ti-arrow-circle-left"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="sidebar-menu scrollable pos-r">
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="ti-user"></i> </span><span class="title">Account</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/Admin/Barber">Barber</a></li>
+                            <li><a href="/Admin/Customer">Customer</a></li>
+                        </ul>
+                    </li>
+                    @*TODO remove transaction viewm module<li class="nav-item active"><a class="sidebar-link" href="/Admin/Transaction" default><span class="icon-holder"><i class="c-grey-500 ti-files"></i> </span><span class="title text-white">Transaction</span></a></li>*@
+                    <li class="nav-item active"><a class="sidebar-link" href="/Admin/Hair" default><span class="icon-holder"><i class="ti-palette"></i> </span><span class="title">HairStyle</span></a></li>
+                    <li class="nav-item active"><a class="sidebar-link" href="/Admin/FaceShape" default><span class="icon-holder"><i class="ti-layout-list-thumb"></i> </span><span class="title">Face Shape</span></a></li>
+                    <li class="nav-item active"><a class="sidebar-link" href="/Admin/IncomeStatistic" default><span class="icon-holder"><i class="ti-bar-chart"></i> </span><span class="title">Income Statistic</span></a></li>
+                    <li class="nav-item active"><a class="sidebar-link" href="/Admin/Complaint" default><span class="icon-holder"><i class="ti-comment-alt"></i> </span><span class="title">Complaint</span></a></li>
+                    <li class="nav-item active"><a class="sidebar-link" href="/Admin/SysVariable" default><span class="icon-holder"><i class="ti-power-off"></i> </span><span class="title">Configuration</span></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="page-container">
+            <div class="header navbar mt-headernav">
+                <div class="header-container">
+                    <ul class="nav-left">
+                        @*Navigation <li>
+                            <a id="sidebar-toggle" class="sidebar-toggle" href="javascript:void(0);">
+                                <i class="ti-menu text-white"></i>
+                            </a>
+                        </li>*@
+                        <li>
+                            <h3 style="margin-top: 11px;color: white;">Popular Barber Shop</h3>
+                        </li>
+                    </ul>
+                    <ul class="nav-right">
+                        <li class="notifications dropdown">
+                            <span id="numBell" style="visibility: hidden" class="counter bgc-red">0</span> <a href="#" class="dropdown-toggle no-after" data-toggle="dropdown"><i class="ti-bell text-white"></i></a>
+                            <ul class="dropdown-menu">
+                                <li class="pX-20 pY-15 bdB"><i class="ti-bell pR-10"></i> <span class="fsz-sm fw-600 c-grey-900">Notifications</span></li>
+                                <li>
+                                    <ul id="listBell" class="ovY-a pos-r scrollable lis-n p-0 m-0 fsz-sm"></ul>
+                                </li>
+                                <li class="pX-20 pY-15 ta-c bdT"><span><a onclick="window.localStorage.removeItem('target')" href="/Admin/Complaint" class="c-grey-600 cH-blue fsz-sm td-n">View All Notifications <i class="ti-angle-right fsz-xs mL-10"></i></a></span></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-toggle="dropdown">
+                                <div class="peer mR-10"><img id="userAvatar" class="w-2r bdrs-50p" src="" alt="" style="height: 2.1em"></div>
+                                <div class="peer"><span id="txtUserFullName" class="fsz-sm  text-white"></span></div>
+                            </a>
+                            <ul class="dropdown-menu fsz-sm">
+                                @*<li><a href="#" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700"><i class="ti-settings mR-10"></i> <span>Setting</span></a></li>
+                                    <li role="separator" class="divider"></li>*@
+                                <li><a href="#" onclick="Logout()" class="d-b td-n pY-5 bgcH-grey-100 c-grey-700"><i class="ti-power-off mR-10"></i> <span>Logout</span></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <main class="main-content">
+                <div id="mainContent">
+
+                    @RenderBody()
+
+                </div>
+            </main>
+            @*<footer class="bdT ta-c p-30 lh-0 fsz-sm c-grey-600">
+                <span>Copyright © 2019 Designed by <a href="http://www.google.com" target="_blank" title="Colorlib">PBSA</a>. All rights reserved.</span>
+
+            </footer>*@
+        </div>
+    </div>
+    <script src="~/js/vendor.js"></script>
+    <script src="~/js/bundle.js"></script>
+    <script src="~/js/auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
+    <script src="~/js/Firebase.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+    <script type="text/javascript">
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.classList.add('fadeOut');
+            }, 1000);
+        });
+
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-23581568-13');
+
+        //window.onload = function () {
+        //    CheckAuthorized();
+        //    initFirebase();
+        //    SetUserAvatar();
+        //    SetUserName();
+        //};
+
+        //function SetUserAvatar() {
+        //    $('#userAvatar').prop('src', getCookie("avatar"))
+        //}
+
+        //function SetUserName() {
+        //    $('#txtUserFullName').text(getCookie("fullName"));
+        //}
+    </script>
+
+    @*<script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyAjJ0j8F656hezuNMMU_0jrfwIRfanEshM",
+                authDomain: "fpt-pbsa.firebaseapp.com",
+                databaseURL: "https://fpt-pbsa.firebaseio.com",
+                projectId: "fpt-pbsa",
+                storageBucket: "fpt-pbsa.appspot.com",
+                messagingSenderId: "202138353372"
+            };
+            firebase.initializeApp(config);
+        </script>*@
+
+</body>
+<!-- Mirrored from colorlib.com/polygon/adminator/datatable.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 14 Feb 2019 14:09:43 GMT -->
+
+</html>

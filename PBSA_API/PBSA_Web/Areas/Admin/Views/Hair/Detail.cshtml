@@ -1,0 +1,335 @@
+﻿@model int
+@{
+    Layout = "~/Areas/Admin/Views/_AdminLayout.cshtml";
+}
+<link href="~/css/mycss.css" rel="stylesheet" />
+<link href="~/css/mytable.css" rel="stylesheet" />
+<link href="~/css/carousel.css" rel="stylesheet" />
+<title>PBSA | Hairstyle Detail</title>
+
+<div class="container-fluid">
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <div class="row">
+            <table class="w-100">
+                <tr>
+                    <td class="col-10">
+                        <h2 class="c-grey-900 mT-10 mB-30">Hairstyle <span id="hdHairStyle"></span> 's detail</h2>
+                    </td>
+                    <td class="col-2">
+                        <button id="btnAdd" hidden type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="AddModal()">Add Sample</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <table class="my_table my_table_boxshadow">
+                    <thead class="my_thead">
+                        <tr>
+                            <td style="padding: 0 0.5em; width:12em">Hair style information</td>
+                            <td style="padding: 0 0.5em; float: right"><button onclick="UpdateHairInfo()" class="btn btn-light">Update</button></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="my_label">Name<span class="requiredField"></span></td>
+                            <td><input class="form-control" id="txtName" type="text" maxlength="20" readonly style="width:13em" /></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label">Difficult Rate<span class="requiredField"></span></td>
+                            <td><input class="form-control" id="txtDiffRate" type="number" min="0" max="5" style="width:4em" /></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label ">Viewed Count</td>
+                            <td><span id="txtViewCount"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="my_label">Description</td>
+                            <td><input class="form-control" id="txtDescription" type="text" maxlength="200" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-7">
+                <table class="my_table my_table_boxshadow">
+                    <thead class="my_thead">
+                        <tr>
+                            <th style="width: 12em; padding: 0 0.5em">Face type</th>
+                            <th>Description</th>
+                            @*<th style="width: 12em">Action</th>*@
+                        </tr>
+                    </thead>
+                    <tbody id="faceTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--Begin Modal-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="mymodal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Add Hair Sample</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <table class="my_table">
+                        <tbody>
+                            <tr>
+                                <td class="my_label my_tdMinWidth">Face</td>
+                                <td>
+                                    <select id="slFaces" class="form-control-sm"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="my_label">Description</td>
+                                <td><input id="txtDesc" required type="text" class="form-control" /></td>
+                            </tr>
+                            <tr>
+                                <td class="my_label">Image </td>
+                                <td>
+                                    <input class="btn" type="file" id="file" name="file" onchange="uploadImage()" />
+                                    @*<input type="button" class="btn" value="Upload" onclick="uploadImage()">*@
+
+                                    <div class='preview'>
+                                        <img src="" id="img" width="200" height="200" alt="">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnAddFace" type="button" class="btn btn-primary" onclick="Add()" data-toggle="modal">Add</button>
+                    <button id="btnUpdateFace" type="button" class="btn btn-primary" onclick="Update()" data-toggle="modal">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Modal-->
+
+    <input id="txtId" type="text" hidden value="@Model" />
+    <input id="urlSample" type="text" hidden value="" />
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
+<script src="~/js/common.js"></script>
+<script type="text/javascript">
+    //var relatedFace_arr = [];
+    var faces_arr = [];
+
+    $(document).ready(function () {
+        ViewHairStyleDetail(@Model);
+        DrawTable();
+    });
+
+    function ViewHairStyleDetail(id) {
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: GetURL("hairstyle/get-info", {"id": id}),
+            success: function (data) {
+                $('#txtId').val(data.id);
+                $('#txtName').val(data.hairStyleName);
+                $('#hdHairStyle').text(data.hairStyleName);
+                $('#txtDiffRate').val(data.difficultyRate);
+                $('#txtViewCount').text(data.viewedCount);
+                $('#txtDescription').val(data.description);
+                $('#faceTable').children().remove();
+                $.each(data.hairStyleSamples, function (index, value) {
+                    //relatedFace_arr.push(value.faceShapeId);
+                    $('#faceTable').append(`<tr>
+                                                <td style="padding: 0 0.5em">` + value.faceShape.faceShapeName + `</td>
+                                                <td>` + value.description + `</td>
+                                            </tr>`);
+                });
+            }
+        });
+    }
+
+    //<td>
+    //    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"
+    //        onclick="UpdateModal(` + value.faceShapeId + `, ` + value.id + `, '` + value.description + `', '` + value.url + `')">Update</button>
+    //    <button type="button" class="btn btn-danger" onclick="Delete(` + value.id + `)">Delete</button>
+    //</td>
+
+    function DrawTable() {
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: GetURL("hairstyle/get-faces"),
+            success: function (data) {
+                faces_arr = [];
+                $.each(data, function (index, value) {
+                    faces_arr.push(value);
+                    //if (!relatedFace_arr.includes(value.id)) {
+                    //    faces_arr.push(value);
+                    //}
+
+                });
+            }
+        });
+    }
+
+    function AddModal() {
+        $('#slFaces').children().remove();
+        $.each(faces_arr, function (index, value) {
+            $('#slFaces').append(`<option value="` + value.id + `">` + value.faceShapeName + `</option>`);
+        });
+        $('#txtDesc').val('');
+        $('#urlSample').val('');
+        $('#img').prop('src', '')
+        $('#file').val('');
+
+        $('#slFaces').prop("disabled", false);
+        hide('#btnUpdateFace');
+        show('#btnAddFace');
+    }
+
+    function UpdateModal(faceId, id, desc, url) {
+        $('#txtId').val(id);
+        $('#slFaces').children().remove();
+        $.each(faces_arr, function (index, value) {
+            $('#slFaces').append(`<option value="` + value.id + `">` + value.faceShapeName + `</option>`);
+        });
+        $('#slFaces').val(faceId)
+        $('#txtDesc').val(desc);
+        $('#urlSample').val(url);
+        $('#img').prop('src', url)
+        $('#file').val('');
+
+        $('#slFaces').prop("disabled", true);
+        hide('#btnAddFace');
+        show('#btnUpdateFace');
+    }
+
+    function Add() {
+        var files = $('#file')[0].files[0];
+        if (!files) {
+            alert('Please add an image');
+        } else if (!$('#txtDesc').val()) {
+            alert('Please fill description');
+        }
+        else {
+        $.ajax({
+            type: "POST",
+            "contentType": "application/json-patch+json",
+            url: GetURL("hairstyle/add-hair-sample"),
+            data: JSON.stringify({
+                "id": '' + $('#txtId').val(),
+                "hairStyleId": '' + $('#txtId').val(),
+                "faceShapeId": '' + $('#slFaces').val(),
+                "description": '' + $('#txtDesc').val(),
+                "url": '' + $('#urlSample').val()
+            }),
+            success: function () {
+                alert("Add successfully");
+                ViewHairStyleDetail(@Model);
+                $('#btnClose').click();
+            }
+            });
+        }
+    }
+
+    function Update() {
+        if (!$('#img').prop('src')) {
+            alert('Please add an image');
+        } else if (!$('#txtDesc').val()) {
+            alert('Please fill description');
+        } else {
+            $.ajax({
+                type: "POST",
+                "contentType": "application/json-patch+json",
+                url: GetURL("hairstyle/update-hair-sample"),
+                data: JSON.stringify({
+                    "id": '' + $('#txtId').val(),
+                    "hairStyleId": '' + $('#txtId').val(),
+                    "faceShapeId": '' + $('#slFaces').val(),
+                    "description": '' + $('#txtDesc').val(),
+                    "url": '' + $('#urlSample').val()
+                }),
+                success: function () {
+                    alert("Update successfully");
+                    ViewHairStyleDetail(@Model);
+                    $('#btnClose').click();
+                }
+            });
+        }
+    }
+
+    function Delete(id) {
+        $.ajax({
+            type: "POST",
+            headers: {
+                "Authorization": GetAccessToken(),
+            },
+            url: GetURL("hairstyle/delete-hair-sample", { "id": id}),
+            success: function () {
+                alert("Delete successfully");
+                ViewHairStyleDetail(@Model);
+                $('#btnClose').click();
+            }
+        });
+    }
+
+    function uploadImage() {
+        var fd = new FormData();
+        var files = $('#file')[0].files[0];
+        fd.append('file', files);
+        if (files) {
+            $.ajax({
+                url: GetURL("upload"),
+                type: 'POST',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response != 0) {
+                        $("#img").attr("src", response);
+                        $(".preview img").show(); // Display image
+                        $('#urlSample').val(response);
+                    } else {
+                        alert('file not uploaded');
+                    }
+                },
+            });
+        } else {
+            alert('Please select and image');
+        }
+    }
+
+    function UpdateHairInfo() {
+        if (!isvalidTextInput('#txtName') || !isvalidTextInput('#txtDiffRate')) {
+            alert("Please full fill required information");
+            return;
+        }
+
+        if (!$('#txtDescription').val()) {
+            alert('Please add description');
+        } else if (!$('#txtDiffRate').val()) {
+            alert('Please set difficult rate');
+        } else if (!$('#txtName').val()) {
+            alert('Please fill name');
+        } else {
+            $.ajax({
+                type: "POST",
+                "contentType": "application/json-patch+json",
+                url: GetURL("hairstyle/update-hair-style"),
+                data: JSON.stringify({
+                    "id": @Model,
+                    "hairStyleName": $('#txtName').val(),
+                    "description": $('#txtDescription').val(),
+                    "viewedCount": 0,
+                    "difficultyRate": $('#txtDiffRate').val()
+                }),
+                success: function () {
+                    alert("Update successfully");
+                    $('#btnClose').click();
+                }
+            });
+        }
+    }
+</script>
