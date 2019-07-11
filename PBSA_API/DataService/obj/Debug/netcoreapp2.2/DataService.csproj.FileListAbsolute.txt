@@ -31,3 +31,14 @@ H:\Study\Mobile\BusTapping\Code\BE\PBSA_API\DataService\obj\Debug\netcoreapp2.2\
 H:\Study\Mobile\BusTapping\Code\BE\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.dll
 H:\Study\Mobile\BusTapping\Code\BE\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.pdb
 H:\Study\Mobile\BusTapping\Code\BE\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.csprojAssemblyReference.cache
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\bin\Debug\netcoreapp2.2\DataService.deps.json
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\bin\Debug\netcoreapp2.2\DataService.runtimeconfig.json
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\bin\Debug\netcoreapp2.2\DataService.runtimeconfig.dev.json
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\bin\Debug\netcoreapp2.2\DataService.dll
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\bin\Debug\netcoreapp2.2\DataService.pdb
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.csprojAssemblyReference.cache
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.csproj.CoreCompileInputs.cache
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.AssemblyInfoInputs.cache
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.AssemblyInfo.cs
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.dll
+H:\Study\Mobile\BusTapping\Code\BE\Git\PBSA_API\DataService\obj\Debug\netcoreapp2.2\DataService.pdb

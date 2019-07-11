@@ -38,7 +38,12 @@ namespace PBSA_API
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            //WebHost.CreateDefaultBuilder(args)
+            //    .UseStartup<Startup>();
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+            .UseUrls("http://*:5566")
+            .UseContentRoot(Directory.GetCurrentDirectory())
+            .UseIISIntegration()
+            .UseStartup<Startup>();
     }
 }

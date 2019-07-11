@@ -15,6 +15,11 @@ namespace BUSTAP_API.Controllers
     {
         private readonly IUserService _userService;
 
+        public AdminController(IUserService userService)
+        {
+            this._userService = userService;
+        }
+
         [HttpGet]
         public IActionResult GetAllDriver()
         {
