@@ -80,7 +80,18 @@ namespace DataService.Services
         public IDPaperInfo GetUserByIDPaper(string content)
         {
             IDPaperInfo iDPaperInfo = null;
-            Idpaper idpaper = _iDPaperRepository.GetAll().Where(ip => ip.Content.ToLower().Contains(content)).FirstOrDefault();
+            Idpaper idpaper = null;
+            string[] contents = content.Split(" ");
+            foreach (string con in contents)
+            {
+                idpaper = _iDPaperRepository.GetAll().Where(ip => ip.Content == con).FirstOrDefault();
+                if(idpaper != null)
+                {
+                    break;
+                }
+            }
+
+            //Idpaper idpaper = _iDPaperRepository.GetAll().Where(ip => ip.Content.ToLower().Contains(content)).FirstOrDefault();
             if(idpaper != null)
             {
                 iDPaperInfo = new IDPaperInfo()

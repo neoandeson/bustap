@@ -53,7 +53,7 @@ namespace BUSTAP_API.Controllers
                 {
                     return new JsonResult(IDPaperConstants.ACTIVATED) { StatusCode = StatusCodes.Status200OK };
                 }
-                
+
                 return new JsonResult(IDPaperConstants.DEACTIVATED) { StatusCode = StatusCodes.Status200OK };
             }
             return new JsonResult(IDPaperConstants.ERROR) { StatusCode = StatusCodes.Status404NotFound };
@@ -65,6 +65,17 @@ namespace BUSTAP_API.Controllers
             List<IDPaperInfo> iDPaperInfos = _idPaperService.GetByUserId(userId);
 
             return new JsonResult(iDPaperInfos) { StatusCode = StatusCodes.Status200OK };
+        }
+
+        [HttpPost("/idpp/getUserInfo")]
+        public IActionResult GetUserInfoByIDPaper(string content)
+        {
+            IDPaperInfo result = _idPaperService.GetUserByIDPaper(content);
+            if (result != null)
+            {
+                return new JsonResult(result) { StatusCode = StatusCodes.Status200OK };
+            }
+            return new JsonResult(result) { StatusCode = StatusCodes.Status404NotFound };
         }
     }
 }

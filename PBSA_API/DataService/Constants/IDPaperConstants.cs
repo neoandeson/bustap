@@ -18,5 +18,7 @@ namespace DataService.Constants
         public static readonly string DELETE_FAIL = "Xóa thất bại";
         public static readonly string IDPP_INVALID = "Giấy tờ không hợp lệ";
         public static readonly string IDPP_INACTIVE = "Giấy tờ đã đã ngưng sử dụng";
+        public static readonly string IDPP_FOUND = "Tìm thấy";
+        public static readonly string IDPP_NOTFOUND = "Không tìm thấy";
     }
 }
